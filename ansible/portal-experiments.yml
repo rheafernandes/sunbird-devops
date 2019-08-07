@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: local
   vars:
     ansible_connection: local
   vars_files:
