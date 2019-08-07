@@ -14,6 +14,7 @@ node() {
 //                    cleanWs()
                     checkout scm
                     currentWs = sh(returnStdout: true, script: 'pwd').trim()
+                    values = [;]
                     ansiblePlaybook = "$currentWs/ansible/portal-experiments.yml"
                     ansibleExtraArgs = "--syntax-check"
                     values.put('currentWs', currentWs)
