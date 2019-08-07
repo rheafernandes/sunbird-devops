@@ -9,11 +9,10 @@ node() {
             String ANSI_RED = "\u001B[31m"
 	
 
-            if (params.cdn_enable == "true") {
+ //           if (params.cdn_enable == "true") {
                 stage('Initialize repos') {
 //                    cleanWs()
                     checkout scm
-                    values = docker_params()
                     currentWs = sh(returnStdout: true, script: 'pwd').trim()
                     ansiblePlaybook = "$currentWs/ansible/portal-experiments.yml"
                     ansibleExtraArgs = "--syntax-check"
@@ -41,17 +40,12 @@ node() {
                         values.put('ansibleExtraArgs', ansibleExtraArgs)
                         ansible_playbook_run(values)
                         archiveArtifacts 'metadata.json, sunbird-portal/src/app/dist/index_cdn.ejs'
-                        currentBuild.description = "Image tag: " + values.image_tag + ", CDN Hash: " + commitHash
+                        //currentBuild.description = "Image tag: " + values.image_tag + ", CDN Hash: " + commitHash
                     }
                 }
             }
-            else {
-                copyArtifacts projectName: params.absolute_job_path, flatten: true
-                archiveArtifacts 'metadata.json'
-                image_tag = sh(returnStdout: true, script: 'jq -r .image_tag metadata.json').trim()
-                currentBuild.description = "${image_tag}"
-            }
-        }
+            
+        //}
     }
 }
     catch (err) {
