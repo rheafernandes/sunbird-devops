@@ -15,7 +15,7 @@ node() {
                     checkout scm
                     values = docker_params()
                     currentWs = sh(returnStdout: true, script: 'pwd').trim()
-                    ansiblePlaybook = "$currentWs/ansible/assets-upload.yml"
+                    ansiblePlaybook = "$currentWs/ansible/portal-experiments.yml"
                     ansibleExtraArgs = "--syntax-check"
                     values.put('currentWs', currentWs)
                     values.put('ansiblePlaybook', ansiblePlaybook)
@@ -37,7 +37,7 @@ node() {
                             checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: commitHash]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/Sunbird-Ed/SunbirdEd-portal.git']]]
                             sh "./build-cdn.sh ${cdnUrl} ${commitHash}"
                         }
-                        ansibleExtraArgs = "--extra-vars assets=$currentWs/sunbird-portal/src/app/dist --extra-vars cdn_file_path=$currentWs/sunbird-portal/src/app/dist/index_cdn.ejs --vault-password-file /var/lib/jenkins/secrets/vault-pass"
+                        ansibleExtraArgs = "--extra-vars assets=$currentWs/sunbird-portal/src/app/dist --extra-vars folder_name=$JOB_NAME --vault-password-file /var/lib/jenkins/secrets/vault-pass"
                         values.put('ansibleExtraArgs', ansibleExtraArgs)
                         ansible_playbook_run(values)
                         archiveArtifacts 'metadata.json, sunbird-portal/src/app/dist/index_cdn.ejs'

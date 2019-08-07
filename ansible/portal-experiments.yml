@@ -5,4 +5,4 @@
   vars_files:
     - ['{{inventory_dir}}/secrets.yml']
   roles:
-    - assets-upload-azure
+    - portal-experiments
