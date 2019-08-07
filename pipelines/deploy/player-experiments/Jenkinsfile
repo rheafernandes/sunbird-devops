@@ -13,11 +13,17 @@ node() {
                 stage('Initialize repos') {
 //                    cleanWs()
                     checkout scm
-                    currentWs = sh(returnStdout: true, script: 'pwd').trim()
                     values = [:]
+                    envDir = sh(returnStdout: true, script: "echo $JOB_NAME").split('/')[-3].trim()
+                    module = sh(returnStdout: true, script: "echo $JOB_NAME").split('/')[-2].trim()
+                    jobName = sh(returnStdout: true, script: "echo $JOB_NAME").split('/')[-1].trim()
+                    currentWs = sh(returnStdout: true, script: 'pwd').trim()
                     ansiblePlaybook = "$currentWs/ansible/portal-experiments.yml"
                     ansibleExtraArgs = "--syntax-check"
                     values.put('currentWs', currentWs)
+                    values.put('env', envDir)
+                    values.put('module', module)
+                    values.put('jobName', jobName)
                     values.put('ansiblePlaybook', ansiblePlaybook)
                     values.put('ansibleExtraArgs', ansibleExtraArgs)
                     ansible_playbook_run(values)
@@ -37,7 +43,7 @@ node() {
                             checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: commitHash]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/Sunbird-Ed/SunbirdEd-portal.git']]]
                             sh "./build-cdn.sh ${cdnUrl} ${commitHash}"
                         }
-                        ansibleExtraArgs = "--extra-vars assets=$currentWs/sunbird-portal/src/app/dist --extra-vars folder_name=$JOB_NAME --vault-password-file /var/lib/jenkins/secrets/vault-pass"
+                        ansibleExtraArgs = "--extra-vars assets=$currentWs/sunbird-portal/src/app/dist --extra-vars folder_name=$JobName --vault-password-file /var/lib/jenkins/secrets/vault-pass"
                         values.put('ansibleExtraArgs', ansibleExtraArgs)
                         ansible_playbook_run(values)
                         archiveArtifacts 'metadata.json, sunbird-portal/src/app/dist/index_cdn.ejs'
