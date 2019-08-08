@@ -38,11 +38,10 @@ node() {
                     }
                     else {
                         println cdnUrl
-                        //commitHash = sh(script: "jq -r '.commit_hash' metadata.json", returnStdout: true).trim()
                         dir('sunbird-portal') {
                             checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "${params.portal_branch_name}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${params.portal_repo_url}"]]]
                             commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                            sh "./build-cdn.sh ${cdnUrl} ${commitHash}"
+                            sh "./experiments.sh ${cdnUrl} ${commitHash}"
                         }
                         ansibleExtraArgs = "--extra-vars assets=$currentWs/sunbird-portal/src/app/dist --extra-vars folder_name=$jobName --vault-password-file /var/lib/jenkins/secrets/vault-pass"
                         values.put('ansibleExtraArgs', ansibleExtraArgs)
